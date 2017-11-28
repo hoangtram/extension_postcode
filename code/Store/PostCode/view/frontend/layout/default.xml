@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Store_PostCode::css/form_style.css"/>
+        <script src="Store_PostCode::js/jquery-3.2.1.min.js"/>
+        
+        <script src="Store_PostCode::js/jquery-migrate-3.0.0.min.js"/>
+        <script src="Store_PostCode::js/jquery-ui-timepicker-addon.min.js"/>
+        <script src="Store_PostCode::js/jquery.mobile-1.4.5.min.js"/>
+    </head>
+    <body>
+<!--        <referenceContainer name="content">
+            <block class="Store\PostCode\Block\Form" name="postcode_form_info" template="Store_PostCode::form_info.phtml"/>
+        </referenceContainer>-->
+    </body>
+</page>
