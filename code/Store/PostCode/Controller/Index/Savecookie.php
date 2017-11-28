@@ -43,6 +43,15 @@ class Savecookie extends \Magento\Framework\App\Action\Action {
     }
     public function execute() {
         
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance(); // Instance of object manager
+        $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+        $connection = $resource->getConnection();
+        $tableConfig = $connection->getTableName('core_config_data');
+        $sql = "SELECT value FROM " . $tableConfig . " WHERE scope_id = 0 AND path = 'web/unsecure/base_url' ";        
+        $result1 = $connection->fetchAll($sql);
+        $baseurl = $result1[0]["value"];
+        
+        
         $result = $this->resultJsonFactory->create();
         $metadata = $this->_cookieMetadataFactory
             ->createPublicCookieMetadata() 
@@ -51,8 +60,10 @@ class Savecookie extends \Magento\Framework\App\Action\Action {
             
         if ($this->request->getParam('url') != null) {
             $url = $this->request->getParam('url');
-            $path = str_replace("http://192.168.33.60/","",$url);
             
+            
+            
+            $path = str_replace($baseurl,"",$url);
             
             $this->_cookieManager->setPublicCookie(
                 self::JOB_COOKIE_NAME,

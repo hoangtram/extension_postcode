@@ -68,13 +68,18 @@ class LoginPost extends \Magento\Customer\Controller\Account\LoginPost {
         $result = $connection->fetchAll($sql);
         $url = $result[0]["postcode"];
         
+        $tableConfig = $connection->getTableName('core_config_data');
+        $sql = "SELECT value FROM " . $tableConfig . " WHERE scope_id = 0 AND path = 'web/unsecure/base_url' ";        
+        $result1 = $connection->fetchAll($sql);
+        $baseurl = $result1[0]["value"];
+        
         if($url == null){
             
             $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setPath('*/*/');
             return $resultRedirect;
         }else{
-            $path = str_replace("http://192.168.33.60/","",$url);
+            $path = str_replace($baseurl,"",$url);
             $cookieMetadata = $this->_objectManager->get('Magento\Framework\Stdlib\Cookie\CookieMetadataFactory');
             $cookieManager = $this->_objectManager->get('Magento\Framework\Stdlib\CookieManagerInterface');
             $metadata = $cookieMetadata
