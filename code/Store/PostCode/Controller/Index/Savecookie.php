@@ -47,8 +47,10 @@ class Savecookie extends \Magento\Framework\App\Action\Action {
         $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
         $connection = $resource->getConnection();
         $tableConfig = $connection->getTableName('core_config_data');
-        $sql = "SELECT value FROM " . $tableConfig . " WHERE scope_id = 0 AND path = 'web/unsecure/base_url' ";        
-        $result1 = $connection->fetchAll($sql);
+        $select1 = $connection->select()->from($tableConfig, "value")
+            ->where('scope_id=?', 0)
+            ->where('path=?', 'web/unsecure/base_url');      
+        $result1 = $connection->fetchAll($select1);
         $baseurl = $result1[0]["value"];
         
         

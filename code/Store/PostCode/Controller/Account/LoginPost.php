@@ -64,13 +64,17 @@ class LoginPost extends \Magento\Customer\Controller\Account\LoginPost {
         $resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
         $connection = $resource->getConnection();
         $tableName = $resource->getTableName('customer_entity');
-        $sql = "SELECT postcode FROM " . $tableName . " WHERE entity_id =".$customer_id ;
-        $result = $connection->fetchAll($sql);
+        $select = $connection->select()->from($tableName, "postcode")
+            ->where('entity_id = ? ', $customer_id);
+        $result = $connection->fetchAll($select);
+        
         $url = $result[0]["postcode"];
         
         $tableConfig = $connection->getTableName('core_config_data');
-        $sql = "SELECT value FROM " . $tableConfig . " WHERE scope_id = 0 AND path = 'web/unsecure/base_url' ";        
-        $result1 = $connection->fetchAll($sql);
+        $select1 = $connection->select()->from($tableConfig, "value")
+            ->where('scope_id=?', 0)
+            ->where('path=?', 'web/unsecure/base_url');     
+        $result1 = $connection->fetchAll($select1);
         $baseurl = $result1[0]["value"];
         
         if($url == null){

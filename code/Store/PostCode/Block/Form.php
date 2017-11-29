@@ -39,9 +39,11 @@ class Form extends \Magento\Framework\View\Element\Template implements \Magento\
         $tableName = $connection->getTableName('core_config_data');
         $tableStore = $connection->getTableName('store');
         
-        $sql = "SELECT scope_id FROM " . $tableName . " WHERE value = '" . $postCode . "' AND path = 'general/store_information/postcode' " ;
-        $result1 = $connection->fetchAll($sql);
-        
+        $select = $connection->select()->from($tableName, "scope_id")
+            ->where('value=?', $postCode)
+            ->where('path =?','general/store_information/postcode' );
+        $result1 = $connection->fetchAll($select);
+        //var_dump($result1);die();
         $url = [];
         if($result1 != null){
             $scope_id = [];
@@ -49,9 +51,11 @@ class Form extends \Magento\Framework\View\Element\Template implements \Magento\
                 $scope_id[] = $value["scope_id"];
             }
             $in = '(' . implode(',', $scope_id) .')';
-            
-            $sql = "SELECT store_id, code FROM " . $tableStore . " WHERE store_id <> 1 AND website_id IN " . $in ;        
-            $result2 = $connection->fetchAll($sql);
+            $fields = array('store_id', 'code');
+            $select1 = $connection->select()->from($tableStore, $fields)
+            ->where('store_id <> ?', 1)
+            ->where('website_id IN '.$in);        
+            $result2 = $connection->fetchAll($select1);
             $store_id = [];
             $code = [];
             foreach ($result2 as $key => $value) {
@@ -60,9 +64,11 @@ class Form extends \Magento\Framework\View\Element\Template implements \Magento\
             }
             
             $in = '(' . implode(',', $store_id) .')';
-            
-            $sql = "SELECT value FROM " . $tableName . " WHERE scope ='stores' AND scope_id IN " . $in . " AND path = 'web/unsecure/base_url' ";        
-            $result3 = $connection->fetchAll($sql);
+            $select2 = $connection->select()->from($tableName, 'value')
+                    ->where('scope = ?', 'stores')
+                    ->where('path = ?', 'web/unsecure/base_url')
+                    ->where('scope_id IN '.$in);  
+            $result3 = $connection->fetchAll($select2);
             
             foreach ($result3 as $key => $value) {
 
@@ -72,8 +78,10 @@ class Form extends \Magento\Framework\View\Element\Template implements \Magento\
         }
         else{
             $scope_id = 0;
-            $sql = "SELECT value FROM " . $tableName . " WHERE scope_id = " . $scope_id . " AND path = 'web/unsecure/base_url' ";        
-            $result = $connection->fetchAll($sql);
+            $select = $connection->select()->from($tableName, 'value')
+                    ->where('scope_id = ?', $scope_id)
+                    ->where('path = ?', 'web/unsecure/base_url');        
+            $result = $connection->fetchAll($select);
             $url[] = $result[0]["value"]."default";
         }
         
@@ -93,8 +101,9 @@ class Form extends \Magento\Framework\View\Element\Template implements \Magento\
             $connection = $this->_resource->getConnection('Magento\Framework\App\ResourceConnection');
             $tableName = $connection->getTableName('customer_entity');
             $customer_id = $this->customerSession->getCustomerId();
-            $sql = "SELECT postcode FROM " . $tableName . " WHERE entity_id = ".$customer_id ;
-            $result = $connection->fetchAll($sql);
+            $select = $connection->select()->from($tableName, 'postcode')
+                    ->where('entity_id = ?', $customer_id);
+            $result = $connection->fetchAll($select);
             $url = $result[0]["postcode"];
             echo $this->customerSession->getCustomerId();
             
